@@ -41,7 +41,7 @@ jobs:
         id: qgStatus
         uses: fjogeleit/http-request-action@v1.15.2
         with:
-          url: 'http://c1.etsisi.upm.es:8888/api/qualitygates/project_status?projectKey=ETSISI-EMS_ems2025-lab-3-mantenibilidad-angel_profe_7946140c-163d-4a15-bef6-cfed5020b1d3'
+          url: '${{ secrets.SONAR_HOST_URL }}/api/qualitygates/project_status?projectKey=${{ secret.PROJECT_ID}}&token=${{ secrets.SONAR_TOKEN }}'
           method: 'GET'
       - name: show status
         run: echo ${{ fromJson(steps.qgStatus.outputs.response).projectStatus.status}}
