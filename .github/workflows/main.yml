@@ -37,3 +37,17 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ETSISI-EMS_ems2025-lab-3-mantenibilidad-angel_profe_7946140c-163d-4a15-bef6-cfed5020b1d3 -Dsonar.projectName='ems2025-lab-3-mantenibilidad-angel_profe'
+      - name: Query status
+        id: qgStatus
+        uses: fjogeleit/http-request-action@v1.15.2
+        with:
+          url: '${{ secrets.SONAR_HOST_URL }}/api/qualitygates/project_status?projectKey=${{ secrets.PROJECT_ID }}'
+          method: 'GET'
+      - name: show status
+        run: echo ${{ fromJson(steps.qgStatus.outputs.response).projectStatus.status}}
+      - name: fail_if_error
+        if: ${{ fromJson(steps.qgStatus.outputs.response).projectStatus.status == 'ERROR'}}
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            core.setFailed('quality gates not met') 
